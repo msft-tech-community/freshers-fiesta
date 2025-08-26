@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Registration Entries</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-width: 400px;
+        }
+
+        .admin-panel {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 95%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #333;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #555;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            margin-top: 1rem;
+            font-weight: 500;
+        }
+
+        .success {
+            color: #27ae60;
+            text-align: center;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .search-box {
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            min-width: 300px;
+        }
+
+        .logout-btn {
+            padding: 0.75rem 1.5rem;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .admin-panel {
+                width: 98%;
+                padding: 1rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                min-width: auto;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="loginContainer" class="login-container">
+        <h1>Admin Login</h1>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="password">Enter Admin Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn" id="loginBtn">Login</button>
+            <div id="loginError" class="error hidden"></div>
+        </form>
+    </div>
+
+    <div id="adminPanel" class="admin-panel hidden">
+        <div class="controls">
+            <h1>Registration Entries</h1>
+            <button id="logoutBtn" class="logout-btn">Logout</button>
+        </div>
+
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalCount">-</div>
+                <div>Total Registrations</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="todayCount">-</div>
+                <div>Today's Registrations</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="thisWeekCount">-</div>
+                <div>This Week</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <input type="text" id="searchBox" class="search-box" placeholder="🔍 Search by name, email, course, or department...">
+            <button id="refreshBtn" class="btn" style="width: auto; padding: 0.75rem 1.5rem;">Refresh</button>
+        </div>
+
+        <div class="table-container">
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                Loading entries...
+            </div>
+            <div id="noData" class="no-data hidden">No registrations found.</div>
+            <table id="dataTable" class="hidden">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Course</th>
+                        <th>Department</th>
+                        <th>Institute</th>
+                        <th>Batch</th>
+                        <th>Enrollment</th>
+                        <th>Registered (IST)</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Configuration - Update this with your Cloudflare Worker URL
+        const WORKER_URL = 'https://freshers-fiesta-data-handler.rajatrajputdev.workers.dev'; // Replace with your worker URL
+
+        let allData = [];
+        let isLoggedIn = false;
+        let authToken = null;
+
+        // DOM elements
+        const loginContainer = document.getElementById('loginContainer');
+        const adminPanel = document.getElementById('adminPanel');
+        const loginForm = document.getElementById('loginForm');
+        const loginError = document.getElementById('loginError');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const searchBox = document.getElementById('searchBox');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const dataTable = document.getElementById('dataTable');
+        const tableBody = document.getElementById('tableBody');
+        const loading = document.getElementById('loading');
+        const noData = document.getElementById('noData');
+        const totalCount = document.getElementById('totalCount');
+        const todayCount = document.getElementById('todayCount');
+        const thisWeekCount = document.getElementById('thisWeekCount');
+
+        // Login handling
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Logging in...';
+            loginError.classList.add('hidden');
+
+            try {
+                const response = await fetch(`${WORKER_URL}/admin/auth`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ password })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    authToken = result.token;
+                    isLoggedIn = true;
+                    loginContainer.classList.add('hidden');
+                    adminPanel.classList.remove('hidden');
+                    await loadData();
+                    await loadStats();
+                } else {
+                    loginError.textContent = result.error || 'Authentication failed';
+                    loginError.classList.remove('hidden');
+                    document.getElementById('password').value = '';
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                loginError.textContent = 'Connection error. Please try again.';
+                loginError.classList.remove('hidden');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Login';
+            }
+        });
+
+        // Logout handling
+        logoutBtn.addEventListener('click', () => {
+            isLoggedIn = false;
+            authToken = null;
+            loginContainer.classList.remove('hidden');
+            adminPanel.classList.add('hidden');
+            document.getElementById('password').value = '';
+            loginError.classList.add('hidden');
+            allData = [];
+        });
+
+        // Search functionality
+        searchBox.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredData = allData.filter(item => 
+                item.name?.toLowerCase().includes(searchTerm) ||
+                item.email?.toLowerCase().includes(searchTerm) ||
+                item.course?.toLowerCase().includes(searchTerm) ||
+                item.department?.toLowerCase().includes(searchTerm) ||
+                item.institute?.toLowerCase().includes(searchTerm) ||
+                item.phone?.includes(searchTerm) ||
+                item.enrollment?.toLowerCase().includes(searchTerm)
+            );
+            displayData(filteredData);
+        });
+
+        // Refresh button
+        refreshBtn.addEventListener('click', async () => {
+            if (isLoggedIn) {
+                await loadData();
+                await loadStats();
+                searchBox.value = '';
+            }
+        });
+
+        // Load statistics
+        async function loadStats() {
+            try {
+                const response = await fetch(`${WORKER_URL}/admin/stats`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const stats = await response.json();
+                totalCount.textContent = stats.total || 0;
+                todayCount.textContent = stats.today || 0;
+                thisWeekCount.textContent = stats.thisWeek || 0;
+
+            } catch (error) {
+                console.error('Error loading stats:', error);
+                totalCount.textContent = '-';
+                todayCount.textContent = '-';
+                thisWeekCount.textContent = '-';
+            }
+        }
+
+        // Load data from worker
+        async function loadData() {
+            try {
+                loading.classList.remove('hidden');
+                dataTable.classList.add('hidden');
+                noData.classList.add('hidden');
+
+                const response = await fetch(`${WORKER_URL}/admin/data`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        // Token expired or invalid, logout
+                        logoutBtn.click();
+                        return;
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                allData = await response.json();
+                loading.classList.add('hidden');
+                
+                if (allData.length === 0) {
+                    noData.classList.remove('hidden');
+                } else {
+                    displayData(allData);
+                }
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                loading.classList.add('hidden');
+                noData.classList.remove('hidden');
+                document.getElementById('noData').textContent = 'Error loading data. Please check your worker URL.';
+            }
+        }
+
+        // Display data in table
+        function displayData(data) {
+            if (data.length === 0) {
+                dataTable.classList.add('hidden');
+                noData.classList.remove('hidden');
+                return;
+            }
+
+            tableBody.innerHTML = '';
+            
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${escapeHtml(item.name || '')}</td>
+                    <td>${escapeHtml(item.email || '')}</td>
+                    <td>${escapeHtml(item.phone || '')}</td>
+                    <td>${escapeHtml(item.course || '')}</td>
+                    <td>${escapeHtml(item.department || '')}</td>
+                    <td>${escapeHtml(item.institute || '')}</td>
+                    <td>${escapeHtml(item.batch || '')}</td>
+                    <td>${escapeHtml(item.enrollment || '')}</td>
+                    <td>${formatDate(item.created_ist || item.created_utc)}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            dataTable.classList.remove('hidden');
+            noData.classList.add('hidden');
+        }
+
+        // Utility functions
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleString('en-IN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    timeZone: 'Asia/Kolkata'
+                });
+            } catch (error) {
+                return dateString;
+            }
+        }
+
+        // Auto-refresh every 60 seconds
+        setInterval(async () => {
+            if (isLoggedIn) {
+                await loadStats();
+            }
+        }, 60000);
+    </script>
+</body>
+</html>
