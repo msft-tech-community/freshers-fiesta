@@ -1,1144 +1,1413 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fresher's Fiesta - Movie Quiz Registration</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: "Arial", sans-serif;
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        min-height: 100vh;
-        padding: 20px;
-      }
-
-      .container {
-        max-width: 1000px;
-        margin: 0 auto;
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        position: relative;
-      }
-
-      .header {
-        background: linear-gradient(45deg, #7fba00 0%, #00a4ef 100%);
-        color: white;
-        text-align: center;
-        padding: 40px 20px;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .header::before {
-        content: "";
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="white" opacity="0.3"/><circle cx="80" cy="30" r="1.5" fill="white" opacity="0.4"/><circle cx="60" cy="70" r="1" fill="white" opacity="0.5"/><circle cx="30" cy="80" r="2.5" fill="white" opacity="0.2"/><circle cx="90" cy="90" r="1" fill="white" opacity="0.6"/></svg>')
-          repeat;
-        animation: sparkle 20s linear infinite;
-      }
-
-      @keyframes sparkle {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-
-      .header h1 {
-        font-size: 3em;
-        margin-bottom: 10px;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        z-index: 2;
-        position: relative;
-      }
-
-      .header p {
-        font-size: 1.2em;
-        opacity: 0.9;
-        z-index: 2;
-        position: relative;
-      }
-
-      .movie-icons {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: 20px 0;
-        gap: 20px;
-        flex-wrap: wrap;
-      }
-
-      .movie-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        background: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2em;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        animation: bounce 2s infinite alternate;
-        transition: transform 0.3s ease;
-      }
-
-      .movie-icon:hover {
-        transform: scale(1.1);
-      }
-
-      .movie-icon:nth-child(1) {
-        animation-delay: 0s;
-      }
-      .movie-icon:nth-child(2) {
-        animation-delay: 0.2s;
-      }
-      .movie-icon:nth-child(3) {
-        animation-delay: 0.4s;
-      }
-      .movie-icon:nth-child(4) {
-        animation-delay: 0.6s;
-      }
-      .movie-icon:nth-child(5) {
-        animation-delay: 0.8s;
-      }
-
-      @keyframes bounce {
-        0% {
-          transform: translateY(0px);
-        }
-        100% {
-          transform: translateY(-10px);
-        }
-      }
-
-      .progress-bar {
-        background: rgb(255, 255, 255);
-        height: 8px;
-        border-radius: 4px;
-        margin: 20px 0;
-        overflow: hidden;
-        position: relative;
-      }
-
-      .progress-fill {
-        background: linear-gradient(90deg, #56ab2f 0%, #a8e6cf 100%);
-        height: 100%;
-        border-radius: 4px;
-        transition: width 0.5s ease;
-        width: 20%;
-      }
-
-      .step-indicator {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        margin: 20px 0;
-      }
-
-      .step-dot {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        transition: all 0.3s ease;
-        color: white;
-      }
-
-      .step-dot.active {
-        background: white;
-        color: #667eea;
-        transform: scale(1.2);
-      }
-
-      .step-dot.completed {
-        background: #56ab2f;
-        color: white;
-      }
-
-      .form-container {
-        padding: 40px;
-        background: white;
-        position: relative;
-        min-height: 600px;
-      }
-
-      .form-step {
-        position: absolute;
-        width: 100%;
-        opacity: 0;
-        transform: translateX(100px);
-        transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        pointer-events: none;
-      }
-
-      .form-step.active {
-        opacity: 1;
-        transform: translateX(0);
-        pointer-events: all;
-        position: relative;
-      }
-
-      .form-step.prev {
-        opacity: 0;
-        transform: translateX(-100px);
-      }
-
-      .form-step.next {
-        opacity: 0;
-        transform: translateX(100px);
-      }
-
-      .step-content {
-        margin-bottom: 50px;
-        padding: 30px;
-        border-radius: 20px;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .section-header {
-        display: flex;
-        align-items: center;
-        margin-bottom: 25px;
-        gap: 20px;
-      }
-
-      .character-image {
-        width: 120px;
-        height: 120px;
-        background: white;
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-        animation: wiggle 3s ease-in-out infinite;
-        position: relative;
-        border: 3px solid #fff;
-        overflow: hidden;
-      }
-
-      /* Character Images using CSS Art */
-      .character-image.spiderman {
-        background: radial-gradient(circle, #dc143c 40%, #8b0000 100%);
-      }
-      .character-image.spiderman::before {
-        content: "🕷️";
-        font-size: 3em;
-        color: white;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-      }
-
-      .character-image.iron-man {
-        background: radial-gradient(circle, #ffd700 40%, #ff6347 100%);
-      }
-      .character-image.iron-man::before {
-        content: "🤖";
-        font-size: 3em;
-        filter: hue-rotate(30deg);
-      }
-
-      .character-image.batman {
-        background: radial-gradient(circle, #2c2c2c 40%, #000000 100%);
-      }
-      .character-image.batman::before {
-        content: "🦇";
-        font-size: 3em;
-        color: #ffd700;
-      }
-
-      .character-image.naruto {
-        background: radial-gradient(circle, #ff8c00 40%, #ff4500 100%);
-      }
-      .character-image.naruto::before {
-        content: "🌀";
-        font-size: 3em;
-        color: white;
-      }
-
-      .character-image.celebration {
-        background: radial-gradient(circle, #ff69b4 40%, #9370db 100%);
-      }
-      .character-image.celebration::before {
-        content: "🏆";
-        font-size: 3em;
-        animation: celebrate 2s ease-in-out infinite;
-      }
-
-      @keyframes celebrate {
-        0%,
-        100% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.2) rotate(10deg);
-        }
-      }
-
-      .character-image::after {
-        content: attr(data-caption);
-        position: absolute;
-        bottom: -30px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(0, 0, 0, 0.8);
-        color: white;
-        padding: 5px 10px;
-        border-radius: 10px;
-        font-size: 12px;
-        white-space: nowrap;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-      }
-
-      .character-image:hover::after {
-        opacity: 1;
-      }
-
-      @keyframes wiggle {
-        0%,
-        100% {
-          transform: rotate(0deg);
-        }
-        25% {
-          transform: rotate(-3deg);
-        }
-        75% {
-          transform: rotate(3deg);
-        }
-      }
-
-      .section-title {
-        flex: 1;
-      }
-
-      .section-title h2 {
-        font-size: 2.5em;
-        margin-bottom: 10px;
-        color: #333;
-      }
-
-      .section-title p {
-        color: #ff0000;
-        font-size: 1.2em;
-        font-style: italic;
-      }
-
-      /* Step-specific backgrounds */
-      .step-1 {
-        background: linear-gradient(135deg, #e9ffba 0%, #7fba00 100%);
-      }
-      .step-2 {
-        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-      }
-      .step-3 {
-        background: linear-gradient(135deg, #d9a7c7 0%, #fffcdc 100%);
-      }
-      .step-4 {
-        background: linear-gradient(135deg, #ffe7a4 0%, #ffb900 100%);
-      }
-      .step-5 {
-        background: linear-gradient(135deg, #e9ffba 0%, #7fba00 100%);
-        color: white;
-      } /* Greenish background */
-
-      .form-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 25px;
-      }
-
-      .form-group {
-        position: relative;
-      }
-
-      .form-group.full-width {
-        grid-column: 1 / -1;
-      }
-
-      label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: bold;
-        color: #333;
-        font-size: 1.1em;
-      }
-
-      .step-5 label {
-        color: white;
-      }
-
-      input,
-      select {
-        width: 100%;
-        padding: 15px;
-        border: 2px solid rgba(255, 255, 255, 0.8);
-        border-radius: 10px;
-        font-size: 16px;
-        transition: all 0.3s ease;
-        background: rgba(255, 255, 255, 0.9);
-      }
-
-      input:focus,
-      select:focus {
-        outline: none;
-        border-color: #667eea;
-        background: white;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        transform: translateY(-2px);
-      }
-
-      .navigation-buttons {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 40px;
-        padding-top: 30px;
-        border-top: 2px solid rgba(255, 255, 255, 0.3);
-      }
-
-      .nav-btn {
-        padding: 15px 30px;
-        border: none;
-        border-radius: 50px;
-        font-size: 1.1em;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        min-width: 120px;
-      }
-
-      .prev-btn {
-        background: rgba(255, 255, 255, 0.8);
-        color: #333;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-      }
-
-      .prev-btn:hover {
-        background: white;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-      }
-
-      .prev-btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        transform: none;
-      }
-
-      .next-btn {
-        background: linear-gradient(45deg, #f25022 0%, #ffb900 100%);
-        color: white;
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-      }
-
-      .next-btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
-      }
-
-      .submit-btn {
-        background: linear-gradient(45deg, #56ab2f 0%, #a8e6cf 100%);
-        color: white;
-        box-shadow: 0 10px 30px rgba(86, 171, 47, 0.3);
-      }
-
-      .submit-btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 15px 40px rgba(86, 171, 47, 0.4);
-      }
-
-      .speech-bubble {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        background: white;
-        padding: 15px 20px;
-        border-radius: 20px;
-        font-size: 14px;
-        color: #333;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        max-width: 250px;
-        opacity: 0.9;
-        animation: float 3s ease-in-out infinite;
-      }
-
-      .speech-bubble::after {
-        content: "";
-        position: absolute;
-        bottom: -10px;
-        left: 30px;
-        width: 0;
-        height: 0;
-        border-left: 10px solid transparent;
-        border-right: 10px solid transparent;
-        border-top: 10px solid white;
-      }
-
-      @keyframes float {
-        0%,
-        100% {
-          transform: translateY(0px);
-        }
-        50% {
-          transform: translateY(-10px);
-        }
-      }
-
-      .success-message {
-        display: none;
-        background: linear-gradient(45deg, #56ab2f 0%, #a8e6cf 100%);
-        color: white;
-        text-align: center;
-        padding: 30px;
-        border-radius: 15px;
-        margin-top: 30px;
-        font-size: 1.3em;
-        box-shadow: 0 10px 30px rgba(86, 171, 47, 0.3);
-      }
-
-      @media (max-width: 768px) {
-        .header h1 {
-          font-size: 2em;
-        }
-
-        .form-container {
-          padding: 20px;
-        }
-
-        .form-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .section-header {
-          flex-direction: column;
-          text-align: center;
-        }
-
-        .character-image {
-          width: 100px;
-          height: 100px;
-        }
-
-        .section-title h2 {
-          font-size: 2em;
-        }
-
-        .step-content {
-          padding: 20px;
-        }
-
-        .navigation-buttons {
-          flex-direction: column;
-          gap: 15px;
-        }
-
-        .nav-btn {
-          width: 100%;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <h1>🎬 Fresher's Fiesta 🎬</h1>
-        <p>Movie & Anime Quiz Registration</p>
-
-        <div class="movie-icons">
-          <div class="movie-icon">🦸</div>
-          <div class="movie-icon">👑</div>
-          <div class="movie-icon">🐲</div>
-          <div class="movie-icon">🚀</div>
-          <div class="movie-icon">⚡</div>
-        </div>
-
-        <div class="progress-bar">
-          <div class="progress-fill" id="progressFill"></div>
-        </div>
-
-        <div class="step-indicator">
-          <div class="step-dot active" data-step="1">1</div>
-          <div class="step-dot" data-step="2">2</div>
-          <div class="step-dot" data-step="3">3</div>
-          <div class="step-dot" data-step="4">4</div>
-          <div class="step-dot" data-step="5">5</div>
-        </div>
-      </div>
-
-      <div class="form-container">
-        <form id="registrationForm">
-          <!-- Step 1: Personal Information -->
-          <div class="form-step active" data-step="1">
-            <div class="step-content step-1">
-              <div class="section-header">
-                <div
-                  class="character-image spiderman"
-                  data-caption="Your Friendly Neighborhood Spider-Man!"
-                ></div>
-                <div class="section-title">
-                  <h2>Personal Info</h2>
-                  <p>
-                    "With great power comes great responsibility... to fill out
-                    this form!"
-                  </p>
-                </div>
-              </div>
-              <div class="speech-bubble">
-                Let me guess... your name isn't actually "Peter Parker"?
-              </div>
-
-              <div class="form-grid">
-                <div class="form-group full-width">
-                  <label for="name">🎭 Full Name</label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    required
-                    placeholder="Not 'John Doe' hopefully..."
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Step 2: Contact Information -->
-          <div class="form-step" data-step="2">
-            <div class="step-content step-2">
-              <div class="section-header">
-                <div
-                  class="character-image iron-man"
-                  data-caption="I Am Iron Man!"
-                ></div>
-                <div class="section-title">
-                  <h2>Contact Details</h2>
-                  <p>"Sometimes you gotta run before you can walk!"</p>
-                </div>
-              </div>
-              <div class="speech-bubble">
-                FRIDAY, get me their contact info... kidding! Just fill it out
-                😉
-              </div>
-
-              <div class="form-grid">
-                <div class="form-group">
-                  <label for="email">📧 Email Address</label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    placeholder="definitely.not.stark@industries.com"
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label for="phone">📱 Phone Number</label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    required
-                    placeholder="Not the Bat-Phone please"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Step 3: Academic Information -->
-          <div class="form-step" data-step="3">
-            <div class="step-content step-3">
-              <div class="section-header">
-                <div
-                  class="character-image batman"
-                  data-caption="The Dark Knight of Academics!"
-                ></div>
-                <div class="section-title">
-                  <h2>Academic Info</h2>
-                  <p>
-                    "It's not who I am underneath, but what I study that defines
-                    me!"
-                  </p>
-                </div>
-              </div>
-              <div class="speech-bubble">
-                Even Batman had to study... probably at Gotham University!
-              </div>
-
-              <div class="form-grid">
-                <div class="form-group">
-                  <label for="batch">🎓 Batch</label>
-                  <select id="batch" name="batch" required>
-                    <option value="">Select your batch</option>
-                    <option value="2024">2024 - The Fresh Squad</option>
-                    <option value="2023">2023 - The Experienced Ones</option>
-                    <option value="2022">2022 - The Veterans</option>
-                    <option value="2021">2021 - The Legends</option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label for="enrollment">🆔 Enrollment Number</label>
-                  <input
-                    type="text"
-                    id="enrollment"
-                    name="enrollment"
-                    required
-                    placeholder="Your secret student identity"
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label for="course">📚 Course</label>
-                  <select id="course" name="course" required>
-                    <option value="">What are you studying?</option>
-                    <option value="B.Tech">B.Tech - Future Engineer</option>
-                    <option value="B.E">B.E - Another Future Engineer</option>
-                    <option value="BCA">BCA - Code Master</option>
-                    <option value="B.Sc">B.Sc - Science Wizard</option>
-                    <option value="BBA">BBA - Future CEO</option>
-                    <option value="M.Tech">M.Tech - Senior Engineer</option>
-                    <option value="MCA">MCA - Senior Code Master</option>
-                    <option value="MBA">MBA - Future Business Leader</option>
-                    <option value="Other">Other - Mystery Course</option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label for="department">🏢 Department</label>
-                  <input
-                    type="text"
-                    id="department"
-                    name="department"
-                    required
-                    placeholder="e.g., Computer Science, Vigilante Studies"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Step 4: Institute Information -->
-          <div class="form-step" data-step="4">
-            <div class="step-content step-4">
-              <div class="section-header">
-                <div
-                  class="character-image naruto"
-                  data-caption="Believe It! Dattebayo!"
-                ></div>
-                <div class="section-title">
-                  <h2>Institute Details</h2>
-                  <p>
-                    "The harder you work for something, the greater you'll feel
-                    when you achieve it!"
-                  </p>
-                </div>
-              </div>
-              <div class="speech-bubble">
-                Time to show off your ninja academy... I mean, college!
-              </div>
-
-              <div class="form-grid">
-                <div class="form-group full-width">
-                  <label for="institute">🏛️ Institute Name</label>
-                  <input
-                    type="text"
-                    id="institute"
-                    name="institute"
-                    required
-                    placeholder="The Hidden Leaf Academy of... wait, your real college!"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Step 5: Final Submission -->
-          <div class="form-step" data-step="5">
-            <div class="step-content step-5">
-              <div class="section-header">
-                <div
-                  class="character-image celebration"
-                  data-caption="You're the Champion!"
-                ></div>
-                <div class="section-title">
-                  <h2>Ready to Battle!</h2>
-                  <p>"I am inevitable... to win this quiz!"</p>
-                </div>
-              </div>
-              <div
-                class="speech-bubble"
-                style="background: rgba(255, 255, 255, 0.2); color: black"
-              >
-                Assemble your movie knowledge, the quiz awaits!
-              </div>
-
-              <div style="text-align: center; padding: 40px 0; color: black">
-                <div style="font-size: 1.5em; margin-bottom: 20px">
-                  🎬 Review your information and join the ultimate movie quiz
-                  adventure! 🍿
-                </div>
-                <div
-                  style="
-                    background: rgba(255, 255, 255, 0.1);
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Fresher's Fiesta - Movie Quiz Registration</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: "Arial", sans-serif;
+                background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+                min-height: 100vh;
+                padding: 20px;
+            }
+
+            .container {
+                max-width: 1000px;
+                margin: 0 auto;
+                background: white;
+                border-radius: 20px;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+                position: relative;
+            }
+
+            .header {
+                background: linear-gradient(45deg, #7fba00 0%, #00a4ef 100%);
+                color: white;
+                text-align: center;
+                padding: 40px 20px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .header::before {
+                content: "";
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="white" opacity="0.3"/><circle cx="80" cy="30" r="1.5" fill="white" opacity="0.4"/><circle cx="60" cy="70" r="1" fill="white" opacity="0.5"/><circle cx="30" cy="80" r="2.5" fill="white" opacity="0.2"/><circle cx="90" cy="90" r="1" fill="white" opacity="0.6"/></svg>')
+                    repeat;
+                animation: sparkle 20s linear infinite;
+            }
+
+            @keyframes sparkle {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+
+            .header h1 {
+                font-size: 3em;
+                margin-bottom: 10px;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+                z-index: 2;
+                position: relative;
+            }
+
+            .header p {
+                font-size: 1.2em;
+                opacity: 0.9;
+                z-index: 2;
+                position: relative;
+            }
+
+            .movie-icons {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin: 20px 0;
+                gap: 20px;
+                flex-wrap: wrap;
+            }
+
+            .movie-icon {
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                background: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 2em;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+                animation: bounce 2s infinite alternate;
+                transition: transform 0.3s ease;
+            }
+
+            .movie-icon:hover {
+                transform: scale(1.1);
+            }
+
+            .movie-icon:nth-child(1) {
+                animation-delay: 0s;
+            }
+            .movie-icon:nth-child(2) {
+                animation-delay: 0.2s;
+            }
+            .movie-icon:nth-child(3) {
+                animation-delay: 0.4s;
+            }
+            .movie-icon:nth-child(4) {
+                animation-delay: 0.6s;
+            }
+            .movie-icon:nth-child(5) {
+                animation-delay: 0.8s;
+            }
+
+            @keyframes bounce {
+                0% {
+                    transform: translateY(0px);
+                }
+                100% {
+                    transform: translateY(-10px);
+                }
+            }
+
+            .progress-bar {
+                background: rgb(255, 255, 255);
+                height: 8px;
+                border-radius: 4px;
+                margin: 20px 0;
+                overflow: hidden;
+                position: relative;
+            }
+
+            .progress-fill {
+                background: linear-gradient(90deg, #56ab2f 0%, #a8e6cf 100%);
+                height: 100%;
+                border-radius: 4px;
+                transition: width 0.5s ease;
+                width: 20%;
+            }
+
+            .step-indicator {
+                display: flex;
+                justify-content: center;
+                gap: 15px;
+                margin: 20px 0;
+            }
+
+            .step-dot {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.3);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                transition: all 0.3s ease;
+                color: white;
+            }
+
+            .step-dot.active {
+                background: white;
+                color: #667eea;
+                transform: scale(1.2);
+            }
+
+            .step-dot.completed {
+                background: #56ab2f;
+                color: white;
+            }
+
+            .form-container {
+                padding: 40px;
+                background: white;
+                position: relative;
+                min-height: 600px;
+            }
+
+            .form-step {
+                position: absolute;
+                width: 100%;
+                opacity: 0;
+                transform: translateX(100px);
+                transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                pointer-events: none;
+            }
+
+            .form-step.active {
+                opacity: 1;
+                transform: translateX(0);
+                pointer-events: all;
+                position: relative;
+            }
+
+            .form-step.prev {
+                opacity: 0;
+                transform: translateX(-100px);
+            }
+
+            .form-step.next {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+
+            .step-content {
+                margin-bottom: 50px;
+                padding: 30px;
+                border-radius: 20px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .section-header {
+                display: flex;
+                align-items: center;
+                margin-bottom: 25px;
+                gap: 20px;
+            }
+
+            .character-image {
+                width: 120px;
+                height: 120px;
+                background: white;
+                border-radius: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+                animation: wiggle 3s ease-in-out infinite;
+                position: relative;
+                border: 3px solid #fff;
+                overflow: hidden;
+            }
+
+            /* Character Images using CSS Art */
+            .character-image.spiderman {
+                background: radial-gradient(circle, #dc143c 40%, #8b0000 100%);
+            }
+            .character-image.spiderman::before {
+                content: "🕷️";
+                font-size: 3em;
+                color: white;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            }
+
+            .character-image.iron-man {
+                background: radial-gradient(circle, #ffd700 40%, #ff6347 100%);
+            }
+            .character-image.iron-man::before {
+                content: "🤖";
+                font-size: 3em;
+                filter: hue-rotate(30deg);
+            }
+
+            .character-image.batman {
+                background: radial-gradient(circle, #2c2c2c 40%, #000000 100%);
+            }
+            .character-image.batman::before {
+                content: "🦇";
+                font-size: 3em;
+                color: #ffd700;
+            }
+
+            .character-image.naruto {
+                background: radial-gradient(circle, #ff8c00 40%, #ff4500 100%);
+            }
+            .character-image.naruto::before {
+                content: "🌀";
+                font-size: 3em;
+                color: white;
+            }
+
+            .character-image.celebration {
+                background: radial-gradient(circle, #ff69b4 40%, #9370db 100%);
+            }
+            .character-image.celebration::before {
+                content: "🏆";
+                font-size: 3em;
+                animation: celebrate 2s ease-in-out infinite;
+            }
+
+            @keyframes celebrate {
+                0%,
+                100% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.2) rotate(10deg);
+                }
+            }
+
+            .character-image::after {
+                content: attr(data-caption);
+                position: absolute;
+                bottom: -30px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 5px 10px;
+                border-radius: 10px;
+                font-size: 12px;
+                white-space: nowrap;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            .character-image:hover::after {
+                opacity: 1;
+            }
+
+            @keyframes wiggle {
+                0%,
+                100% {
+                    transform: rotate(0deg);
+                }
+                25% {
+                    transform: rotate(-3deg);
+                }
+                75% {
+                    transform: rotate(3deg);
+                }
+            }
+
+            .section-title {
+                flex: 1;
+            }
+
+            .section-title h2 {
+                font-size: 2.5em;
+                margin-bottom: 10px;
+                color: #333;
+            }
+
+            .section-title p {
+                color: #ff0000;
+                font-size: 1.2em;
+                font-style: italic;
+            }
+
+            /* Step-specific backgrounds */
+            .step-1 {
+                background: linear-gradient(135deg, #e9ffba 0%, #7fba00 100%);
+            }
+            .step-2 {
+                background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            }
+            .step-3 {
+                background: linear-gradient(135deg, #d9a7c7 0%, #fffcdc 100%);
+            }
+            .step-4 {
+                background: linear-gradient(135deg, #ffe7a4 0%, #ffb900 100%);
+            }
+            .step-5 {
+                background: linear-gradient(135deg, #e9ffba 0%, #7fba00 100%);
+                color: white;
+            } /* Greenish background */
+
+            .form-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 25px;
+            }
+
+            .form-group {
+                position: relative;
+            }
+
+            .form-group.full-width {
+                grid-column: 1 / -1;
+            }
+
+            label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: bold;
+                color: #333;
+                font-size: 1.1em;
+            }
+
+            .step-5 label {
+                color: white;
+            }
+
+            input,
+            select {
+                width: 100%;
+                padding: 15px;
+                border: 2px solid rgba(255, 255, 255, 0.8);
+                border-radius: 10px;
+                font-size: 16px;
+                transition: all 0.3s ease;
+                background: rgba(255, 255, 255, 0.9);
+            }
+
+            input:focus,
+            select:focus {
+                outline: none;
+                border-color: #667eea;
+                background: white;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+                transform: translateY(-2px);
+            }
+
+            .navigation-buttons {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 40px;
+                padding-top: 30px;
+                border-top: 2px solid rgba(255, 255, 255, 0.3);
+            }
+
+            .nav-btn {
+                padding: 15px 30px;
+                border: none;
+                border-radius: 50px;
+                font-size: 1.1em;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                min-width: 120px;
+            }
+
+            .prev-btn {
+                background: rgba(255, 255, 255, 0.8);
+                color: #333;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            }
+
+            .prev-btn:hover {
+                background: white;
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            }
+
+            .prev-btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+                transform: none;
+            }
+
+            .next-btn {
+                background: linear-gradient(45deg, #f25022 0%, #ffb900 100%);
+                color: white;
+                box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            }
+
+            .next-btn:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+            }
+
+            .submit-btn {
+                background: linear-gradient(45deg, #56ab2f 0%, #a8e6cf 100%);
+                color: white;
+                box-shadow: 0 10px 30px rgba(86, 171, 47, 0.3);
+            }
+
+            .submit-btn:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 15px 40px rgba(86, 171, 47, 0.4);
+            }
+
+            .speech-bubble {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                background: white;
+                padding: 15px 20px;
+                border-radius: 20px;
+                font-size: 14px;
+                color: #333;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                max-width: 250px;
+                opacity: 0.9;
+                animation: float 3s ease-in-out infinite;
+            }
+
+            .speech-bubble::after {
+                content: "";
+                position: absolute;
+                bottom: -10px;
+                left: 30px;
+                width: 0;
+                height: 0;
+                border-left: 10px solid transparent;
+                border-right: 10px solid transparent;
+                border-top: 10px solid white;
+            }
+
+            @keyframes float {
+                0%,
+                100% {
+                    transform: translateY(0px);
+                }
+                50% {
+                    transform: translateY(-10px);
+                }
+            }
+
+            .success-message {
+                display: none;
+                background: linear-gradient(45deg, #56ab2f 0%, #a8e6cf 100%);
+                color: white;
+                text-align: center;
+                padding: 30px;
+                border-radius: 15px;
+                margin-top: 30px;
+                font-size: 1.3em;
+                box-shadow: 0 10px 30px rgba(86, 171, 47, 0.3);
+            }
+
+            @media (max-width: 768px) {
+                .header h1 {
+                    font-size: 2em;
+                }
+
+                .form-container {
                     padding: 20px;
-                    border-radius: 15px;
-                    margin: 20px 0;
-                  "
-                >
-                  <p style="font-size: 1.2em; margin-bottom: 10px">
-                    "Avengers... assemble!"
-                  </p>
-                  <p>- Ready to test your movie knowledge?</p>
+                }
+
+                .form-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .section-header {
+                    flex-direction: column;
+                    text-align: center;
+                }
+
+                .character-image {
+                    width: 100px;
+                    height: 100px;
+                }
+
+                .section-title h2 {
+                    font-size: 2em;
+                }
+
+                .step-content {
+                    padding: 20px;
+                }
+
+                .navigation-buttons {
+                    flex-direction: column;
+                    gap: 15px;
+                }
+
+                .nav-btn {
+                    width: 100%;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>🎬 Fresher's Fiesta 🎬</h1>
+                <p>Movie & Anime Quiz Registration</p>
+
+                <div class="movie-icons">
+                    <div class="movie-icon">🦸</div>
+                    <div class="movie-icon">👑</div>
+                    <div class="movie-icon">🐲</div>
+                    <div class="movie-icon">🚀</div>
+                    <div class="movie-icon">⚡</div>
                 </div>
-              </div>
 
-              <div id="successMessage" class="success-message">
-                🎉 Registration Complete! Welcome to the most epic movie quiz
-                adventure! 🎉
-              </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+
+                <div class="step-indicator">
+                    <div class="step-dot active" data-step="1">1</div>
+                    <div class="step-dot" data-step="2">2</div>
+                    <div class="step-dot" data-step="3">3</div>
+                    <div class="step-dot" data-step="4">4</div>
+                    <div class="step-dot" data-step="5">5</div>
+                </div>
             </div>
-          </div>
 
-          <!-- Navigation Buttons -->
-          <div class="navigation-buttons">
-            <button
-              type="button"
-              class="nav-btn prev-btn"
-              id="prevBtn"
-              disabled
-            >
-              ⬅️ Previous
-            </button>
-            <button type="button" class="nav-btn next-btn" id="nextBtn">
-              Next ➡️
-            </button>
-          </div>
-        </form>
-        <footer style="padding-top: 50px; text-align: center">
-          Website made by
-          <a
-            href="https://linkedin.com/in/rajatrajputdev/"
-            style="font-weight: bold; color: #00a4ef; text-decoration: none"
-            >Rajat Rajput</a
-          >
-          | Microsoft Tech Community
-        </footer>
-      </div>
-    </div>
+            <div class="form-container">
+                <form id="registrationForm">
+                    <!-- Step 1: Personal Information -->
+                    <div class="form-step active" data-step="1">
+                        <div class="step-content step-1">
+                            <div class="section-header">
+                                <div
+                                    class="character-image spiderman"
+                                    data-caption="Your Friendly Neighborhood Spider-Man!"
+                                ></div>
+                                <div class="section-title">
+                                    <h2>Personal Info</h2>
+                                    <p>
+                                        "With great power comes great
+                                        responsibility... to fill out this
+                                        form!"
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="speech-bubble">
+                                Let me guess... your name isn't actually "Peter
+                                Parker"?
+                            </div>
 
-    <script>
-      let currentStep = 1;
-      const totalSteps = 5;
+                            <div class="form-grid">
+                                <div class="form-group full-width">
+                                    <label for="name">🎭 Full Name</label>
+                                    <input
+                                        type="text"
+                                        id="name"
+                                        name="name"
+                                        required
+                                        placeholder="Not 'John Doe' hopefully..."
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-      const form = document.getElementById("registrationForm");
-      const prevBtn = document.getElementById("prevBtn");
-      const nextBtn = document.getElementById("nextBtn");
-      const progressFill = document.getElementById("progressFill");
+                    <!-- Step 2: Contact Information -->
+                    <div class="form-step" data-step="2">
+                        <div class="step-content step-2">
+                            <div class="section-header">
+                                <div
+                                    class="character-image iron-man"
+                                    data-caption="I Am Iron Man!"
+                                ></div>
+                                <div class="section-title">
+                                    <h2>Contact Details</h2>
+                                    <p>
+                                        "Sometimes you gotta run before you can
+                                        walk!"
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="speech-bubble">
+                                FRIDAY, get me their contact info... kidding!
+                                Just fill it out 😉
+                            </div>
 
-      function updateProgress() {
-        const progress = (currentStep / totalSteps) * 100;
-        progressFill.style.width = progress + "%";
-      }
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="email">📧 Email Address</label>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        name="email"
+                                        required
+                                        placeholder="definitely.not.stark@industries.com"
+                                    />
+                                </div>
 
-      function updateStepIndicator() {
-        document.querySelectorAll(".step-dot").forEach((dot, index) => {
-          dot.classList.remove("active", "completed");
-          if (index + 1 === currentStep) {
-            dot.classList.add("active");
-          } else if (index + 1 < currentStep) {
-            dot.classList.add("completed");
-          }
-        });
-      }
+                                <div class="form-group">
+                                    <label for="phone">📱 Phone Number</label>
+                                    <input
+                                        type="tel"
+                                        id="phone"
+                                        name="phone"
+                                        required
+                                        placeholder="Not the Bat-Phone please"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-      function showStep(step) {
-        const allSteps = document.querySelectorAll(".form-step");
+                    <!-- Step 3: Academic Information -->
+                    <div class="form-step" data-step="3">
+                        <div class="step-content step-3">
+                            <div class="section-header">
+                                <div
+                                    class="character-image batman"
+                                    data-caption="The Dark Knight of Academics!"
+                                ></div>
+                                <div class="section-title">
+                                    <h2>Academic Info</h2>
+                                    <p>
+                                        "It's not who I am underneath, but what
+                                        I study that defines me!"
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="speech-bubble">
+                                Even Batman had to study... probably at Gotham
+                                University!
+                            </div>
 
-        allSteps.forEach((stepEl, index) => {
-          stepEl.classList.remove("active", "prev", "next");
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="batch">🎓 Batch</label>
+                                    <select id="batch" name="batch" required>
+                                        <option value="">
+                                            Select your batch
+                                        </option>
+                                        <option value="2025">
+                                            2025 - The Fresh Squad
+                                        </option>
+                                        <option value="2024">
+                                            2024 - The Experienced Ones
+                                        </option>
+                                        <option value="2023">
+                                            2023 - The Veterans
+                                        </option>
+                                        <option value="2022">
+                                            2022 - The Legends
+                                        </option>
+                                    </select>
+                                </div>
 
-          if (index + 1 === step) {
-            // Current step
-            stepEl.classList.add("active");
-          } else if (index + 1 < step) {
-            // Previous steps
-            stepEl.classList.add("prev");
-          } else {
-            // Future steps
-            stepEl.classList.add("next");
-          }
-        });
-      }
+                                <div class="form-group">
+                                    <label for="enrollment"
+                                        >🆔 Enrollment Number</label
+                                    >
+                                    <input
+                                        type="text"
+                                        id="enrollment"
+                                        name="enrollment"
+                                        required
+                                        placeholder="Your secret student identity"
+                                    />
+                                </div>
 
-      function validateCurrentStep() {
-        const currentStepEl = document.querySelector(
-          `.form-step[data-step="${currentStep}"]`
-        );
-        const requiredFields = currentStepEl.querySelectorAll(
-          "input[required], select[required]"
-        );
-        let isValid = true;
-        let firstInvalidField = null;
+                                <div class="form-group">
+                                    <label for="course">📚 Degree</label>
+                                    <select id="course" name="course" required>
+                                        <option value="">
+                                            What are you studying?
+                                        </option>
+                                        <option value="B.Tech">
+                                            B.Tech - Future Engineer
+                                        </option>
+                                        <option value="B.E">
+                                            B.E - Another Future Engineer
+                                        </option>
+                                        <option value="BCA">
+                                            BCA - Code Master
+                                        </option>
+                                        <option value="B.Sc">
+                                            B.Sc - Science Wizard
+                                        </option>
+                                        <option value="BBA">
+                                            BBA - Future CEO
+                                        </option>
+                                        <option value="M.Tech">
+                                            M.Tech - Senior Engineer
+                                        </option>
+                                        <option value="MCA">
+                                            MCA - Senior Code Master
+                                        </option>
+                                        <option value="MBA">
+                                            MBA - Future Business Leader
+                                        </option>
+                                        <option value="Other">
+                                            Other - Mystery Course
+                                        </option>
+                                    </select>
+                                </div>
 
-        console.log(
-          `Validating step ${currentStep}, found ${requiredFields.length} required fields`
-        );
+                                <div class="form-group">
+                                    <label for="department">🏢 Course</label>
+                                    <input
+                                        type="text"
+                                        id="department"
+                                        name="department"
+                                        required
+                                        placeholder="e.g., Computer Science, Vigilante Studies"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-        requiredFields.forEach((field) => {
-          const value = field.value ? field.value.trim() : "";
-          console.log(`Field ${field.name || field.id}: "${value}"`);
+                    <!-- Step 4: Institute Information -->
+                    <div class="form-step" data-step="4">
+                        <div class="step-content step-4">
+                            <div class="section-header">
+                                <div
+                                    class="character-image naruto"
+                                    data-caption="Believe It! Dattebayo!"
+                                ></div>
+                                <div class="section-title">
+                                    <h2>Institute Details</h2>
+                                    <p>
+                                        "The harder you work for something, the
+                                        greater you'll feel when you achieve
+                                        it!"
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="speech-bubble">
+                                Time to show off your ninja academy... I mean,
+                                college!
+                            </div>
 
-          // Reset field styling first
-          field.style.borderColor = "";
-          field.style.background = "";
+                            <div class="form-grid">
+                                <div class="form-group full-width">
+                                    <label for="institute"
+                                        >🏛️ Institute Name</label
+                                    >
+                                    <input
+                                        type="text"
+                                        id="institute"
+                                        name="institute"
+                                        required
+                                        placeholder="The Hidden Leaf Academy of... wait, your real college!"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-          // Check if field is empty
-          if (!value || value === "" || value === null || value === undefined) {
-            field.style.borderColor = "#ff6b6b !important";
-            field.style.background = "#ffe6e6 !important";
-            field.style.boxShadow = "0 0 5px rgba(255, 107, 107, 0.5)";
+                    <!-- Step 5: Final Submission -->
+                    <div class="form-step" data-step="5">
+                        <div class="step-content step-5">
+                            <div class="section-header">
+                                <div
+                                    class="character-image celebration"
+                                    data-caption="You're the Champion!"
+                                ></div>
+                                <div class="section-title">
+                                    <h2>Ready to Battle!</h2>
+                                    <p>
+                                        "I am inevitable... to win this quiz!"
+                                    </p>
+                                </div>
+                            </div>
+                            <div
+                                class="speech-bubble"
+                                style="
+                                    background: rgba(255, 255, 255, 0.2);
+                                    color: black;
+                                "
+                            >
+                                Assemble your movie knowledge, the quiz awaits!
+                            </div>
 
-            // Add shake animation to the field
-            field.style.animation = "fieldShake 0.5s ease-in-out";
-            setTimeout(() => {
-              field.style.animation = "";
-            }, 500);
+                            <div
+                                style="
+                                    text-align: center;
+                                    padding: 40px 0;
+                                    color: black;
+                                "
+                            >
+                                <div
+                                    style="
+                                        font-size: 1.5em;
+                                        margin-bottom: 20px;
+                                    "
+                                >
+                                    🎬 Review your information and join the
+                                    ultimate movie quiz adventure! 🍿
+                                </div>
+                                <div
+                                    style="
+                                        background: rgba(255, 255, 255, 0.1);
+                                        padding: 20px;
+                                        border-radius: 15px;
+                                        margin: 20px 0;
+                                    "
+                                >
+                                    <p
+                                        style="
+                                            font-size: 1.2em;
+                                            margin-bottom: 10px;
+                                        "
+                                    >
+                                        "Avengers... assemble!"
+                                    </p>
+                                    <p>- Ready to test your movie knowledge?</p>
+                                </div>
+                            </div>
 
-            isValid = false;
-            if (!firstInvalidField) firstInvalidField = field;
-            return;
-          }
+                            <div id="successMessage" class="success-message">
+                                🎉 Registration Complete! Welcome to the most
+                                epic movie quiz adventure! 🎉 Please
+                                <button
+                                    id="joinCommunityBtn"
+                                    type="button"
+                                    style="
+                                        background: #fff;
+                                        color: #56ab2f;
+                                        font-weight: bold;
+                                        border: none;
+                                        border-radius: 8px;
+                                        padding: 8px 18px;
+                                        cursor: pointer;
+                                        margin-left: 5px;
+                                        box-shadow: 0 2px 8px
+                                            rgba(86, 171, 47, 0.15);
+                                        display: inline-flex;
+                                        align-items: center;
+                                        gap: 7px;
+                                    "
+                                >
+                                    <svg
+                                        width="22"
+                                        height="22"
+                                        viewBox="0 0 32 32"
+                                        style="vertical-align: middle"
+                                    >
+                                        <circle
+                                            cx="16"
+                                            cy="16"
+                                            r="16"
+                                            fill="#25d366"
+                                        />
+                                        <path
+                                            d="M25.5 21.9c-.4-.2-2.3-1.1-2.7-1.2-.4-.2-.7-.2-1 .2-.3.4-1.1 1.2-1.3 1.4-.2.2-.5.3-.9.1-.4-.2-1.7-.6-3.2-1.9-1.2-1.1-2-2.4-2.2-2.8-.2-.4 0-.6.2-.8.2-.2.4-.5.6-.7.2-.2.2-.4.3-.7.1-.2 0-.5 0-.7 0-.2-.7-1.7-1-2.3-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.7.3-.2.2-1.1 1-1.1 2.5 0 1.5 1.1 3.1 1.3 3.3.2.2 2.1 3.2 5.1 4.3 1.2.4 2.1.7 2.8.7.6 0 1.2-.1 1.6-.2.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2z"
+                                            fill="#fff"
+                                        />
+                                    </svg>
+                                    Join the Community Group
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
-          // Additional validation for specific field types
-          if (field.type === "email") {
-            const emailPattern =
-              /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            if (!emailPattern.test(value)) {
-              field.style.borderColor = "#ff9800 !important";
-              field.style.background = "#fff3e0 !important";
-              field.style.boxShadow = "0 0 5px rgba(255, 152, 0, 0.5)";
-              isValid = false;
-              if (!firstInvalidField) firstInvalidField = field;
-              return;
+                    <!-- Navigation Buttons -->
+                    <div class="navigation-buttons">
+                        <button
+                            type="button"
+                            class="nav-btn prev-btn"
+                            id="prevBtn"
+                            disabled
+                        >
+                            ⬅️ Previous
+                        </button>
+                        <button
+                            type="button"
+                            class="nav-btn next-btn"
+                            id="nextBtn"
+                        >
+                            Next ➡️
+                        </button>
+                    </div>
+                </form>
+                <footer style="padding-top: 50px; text-align: center">
+                    <!-- WhatsApp Community Modal (global, outside success message) -->
+                    <div
+                        id="communityModal"
+                        style="
+                            display: none;
+                            position: fixed;
+                            z-index: 10001;
+                            left: 0;
+                            top: 0;
+                            width: 100vw;
+                            height: 100vh;
+                            background: rgba(0, 0, 0, 0.45);
+                            align-items: center;
+                            justify-content: center;
+                        "
+                    >
+                        <div
+                            style="
+                                background: #fff;
+                                color: #333;
+                                border-radius: 18px;
+                                max-width: 90vw;
+                                width: 350px;
+                                margin: auto;
+                                padding: 32px 24px;
+                                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+                                text-align: center;
+                                position: relative;
+                            "
+                        >
+                            <button
+                                id="closeCommunityModal"
+                                style="
+                                    position: absolute;
+                                    top: 10px;
+                                    right: 14px;
+                                    background: none;
+                                    border: none;
+                                    font-size: 1.5em;
+                                    color: #888;
+                                    cursor: pointer;
+                                "
+                            >
+                                &times;
+                            </button>
+                            <div style="font-size: 2em; margin-bottom: 10px">
+                                🎉
+                            </div>
+                            <h3
+                                style="
+                                    margin-bottom: 12px;
+                                    color: #25d366;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    gap: 8px;
+                                "
+                            >
+                                <svg
+                                    width="28"
+                                    height="28"
+                                    viewBox="0 0 32 32"
+                                    style="vertical-align: middle"
+                                >
+                                    <circle
+                                        cx="16"
+                                        cy="16"
+                                        r="16"
+                                        fill="#25d366"
+                                    />
+                                    <path
+                                        d="M25.5 21.9c-.4-.2-2.3-1.1-2.7-1.2-.4-.2-.7-.2-1 .2-.3.4-1.1 1.2-1.3 1.4-.2.2-.5.3-.9.1-.4-.2-1.7-.6-3.2-1.9-1.2-1.1-2-2.4-2.2-2.8-.2-.4 0-.6.2-.8.2-.2.4-.5.6-.7.2-.2.2-.4.3-.7.1-.2 0-.5 0-.7 0-.2-.7-1.7-1-2.3-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.7.3-.2.2-1.1 1-1.1 2.5 0 1.5 1.1 3.1 1.3 3.3.2.2 2.1 3.2 5.1 4.3 1.2.4 2.1.7 2.8.7.6 0 1.2-.1 1.6-.2.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2z"
+                                        fill="#fff"
+                                    />
+                                </svg>
+                                Join Our WhatsApp Community!
+                            </h3>
+                            <p style="margin-bottom: 18px">
+                                Connect with fellow quiz enthusiasts, get
+                                updates, and more. Click below to join:
+                            </p>
+                            <a
+                                href="https://chat.whatsapp.com/HDatk1QqDs01WoYcBxzvZF"
+                                target="_blank"
+                                rel="noopener"
+                                style="
+                                    display: inline-block;
+                                    background: #25d366;
+                                    color: #fff;
+                                    font-weight: bold;
+                                    padding: 12px 28px;
+                                    border-radius: 8px;
+                                    text-decoration: none;
+                                    font-size: 1.1em;
+                                    box-shadow: 0 2px 8px
+                                        rgba(37, 211, 102, 0.15);
+                                    margin-top: 10px;
+                                "
+                            >
+                                <svg
+                                    width="22"
+                                    height="22"
+                                    viewBox="0 0 32 32"
+                                    style="
+                                        vertical-align: middle;
+                                        margin-right: 7px;
+                                    "
+                                >
+                                    <circle
+                                        cx="16"
+                                        cy="16"
+                                        r="16"
+                                        fill="#25d366"
+                                    />
+                                    <path
+                                        d="M25.5 21.9c-.4-.2-2.3-1.1-2.7-1.2-.4-.2-.7-.2-1 .2-.3.4-1.1 1.2-1.3 1.4-.2.2-.5.3-.9.1-.4-.2-1.7-.6-3.2-1.9-1.2-1.1-2-2.4-2.2-2.8-.2-.4 0-.6.2-.8.2-.2.4-.5.6-.7.2-.2.2-.4.3-.7.1-.2 0-.5 0-.7 0-.2-.7-1.7-1-2.3-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.7.3-.2.2-1.1 1-1.1 2.5 0 1.5 1.1 3.1 1.3 3.3.2.2 2.1 3.2 5.1 4.3 1.2.4 2.1.7 2.8.7.6 0 1.2-.1 1.6-.2.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2z"
+                                        fill="#fff"
+                                    />
+                                </svg>
+                                Join WhatsApp Group
+                            </a>
+                        </div>
+                    </div>
+                    Website made by
+                    <a
+                        href="https://linkedin.com/in/rajatrajputdev/"
+                        style="
+                            font-weight: bold;
+                            color: #00a4ef;
+                            text-decoration: none;
+                        "
+                        >Rajat Rajput</a
+                    >
+                    | Microsoft Tech Community
+                </footer>
+            </div>
+        </div>
+
+        <script>
+            // Community Group Popup Modal (global)
+            document.addEventListener("DOMContentLoaded", function () {
+                const joinBtn = document.getElementById("joinCommunityBtn");
+                const modal = document.getElementById("communityModal");
+                const closeBtn = document.getElementById("closeCommunityModal");
+                if (joinBtn && modal && closeBtn) {
+                    joinBtn.addEventListener("click", function () {
+                        modal.style.display = "flex";
+                    });
+                    closeBtn.addEventListener("click", function () {
+                        modal.style.display = "none";
+                    });
+                    modal.addEventListener("click", function (e) {
+                        if (e.target === modal) modal.style.display = "none";
+                    });
+                }
+            });
+            let currentStep = 1;
+            const totalSteps = 5;
+
+            const form = document.getElementById("registrationForm");
+            const prevBtn = document.getElementById("prevBtn");
+            const nextBtn = document.getElementById("nextBtn");
+            const progressFill = document.getElementById("progressFill");
+
+            function updateProgress() {
+                const progress = (currentStep / totalSteps) * 100;
+                progressFill.style.width = progress + "%";
             }
-          }
 
-          if (field.type === "tel") {
-            const phonePattern = /^[\+]?[0-9\s\-\(\)]{10,15}$/;
-            if (!phonePattern.test(value)) {
-              field.style.borderColor = "#ff9800 !important";
-              field.style.background = "#fff3e0 !important";
-              field.style.boxShadow = "0 0 5px rgba(255, 152, 0, 0.5)";
-              isValid = false;
-              if (!firstInvalidField) firstInvalidField = field;
-              return;
-            }
-          }
-
-          // Field is valid
-          field.style.borderColor = "#4CAF50";
-          field.style.background = "#f0fff0";
-          field.style.boxShadow = "0 0 5px rgba(76, 175, 80, 0.3)";
-        });
-
-        // Focus on first invalid field and show error message
-        if (!isValid && firstInvalidField) {
-          firstInvalidField.focus();
-          firstInvalidField.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-          });
-          showTemporaryMessage(
-            "Please fill in all required fields correctly!",
-            "error"
-          );
-        }
-
-        console.log(`Step ${currentStep} validation result: ${isValid}`);
-        return isValid;
-      }
-
-      function validateAllSteps() {
-        let allValid = true;
-        let firstInvalidStep = null;
-
-        // Check each step from 1 to current
-        for (let stepNum = 1; stepNum <= currentStep; stepNum++) {
-          const stepEl = document.querySelector(
-            `.form-step[data-step="${stepNum}"]`
-          );
-          const requiredFields = stepEl.querySelectorAll(
-            "input[required], select[required]"
-          );
-
-          console.log(
-            `Checking step ${stepNum}, found ${requiredFields.length} fields`
-          );
-
-          requiredFields.forEach((field) => {
-            const value = field.value ? field.value.trim() : "";
-            console.log(
-              `Step ${stepNum} - Field ${field.name || field.id}: "${value}"`
-            );
-
-            if (
-              !value ||
-              value === "" ||
-              value === null ||
-              value === undefined
-            ) {
-              allValid = false;
-              if (!firstInvalidStep) firstInvalidStep = stepNum;
-              console.log(`Invalid field found in step ${stepNum}`);
+            function updateStepIndicator() {
+                document.querySelectorAll(".step-dot").forEach((dot, index) => {
+                    dot.classList.remove("active", "completed");
+                    if (index + 1 === currentStep) {
+                        dot.classList.add("active");
+                    } else if (index + 1 < currentStep) {
+                        dot.classList.add("completed");
+                    }
+                });
             }
 
-            // Additional validations
-            if (value && field.type === "email") {
-              const emailPattern =
-                /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-              if (!emailPattern.test(value)) {
-                allValid = false;
-                if (!firstInvalidStep) firstInvalidStep = stepNum;
-              }
+            function showStep(step) {
+                const allSteps = document.querySelectorAll(".form-step");
+
+                allSteps.forEach((stepEl, index) => {
+                    stepEl.classList.remove("active", "prev", "next");
+
+                    if (index + 1 === step) {
+                        // Current step
+                        stepEl.classList.add("active");
+                    } else if (index + 1 < step) {
+                        // Previous steps
+                        stepEl.classList.add("prev");
+                    } else {
+                        // Future steps
+                        stepEl.classList.add("next");
+                    }
+                });
             }
 
-            if (value && field.type === "tel") {
-              const phonePattern = /^[\+]?[0-9\s\-\(\)]{10,15}$/;
-              if (!phonePattern.test(value)) {
-                allValid = false;
-                if (!firstInvalidStep) firstInvalidStep = stepNum;
-              }
+            function validateCurrentStep() {
+                const currentStepEl = document.querySelector(
+                    `.form-step[data-step="${currentStep}"]`
+                );
+                const requiredFields = currentStepEl.querySelectorAll(
+                    "input[required], select[required]"
+                );
+                let isValid = true;
+                let firstInvalidField = null;
+
+                console.log(
+                    `Validating step ${currentStep}, found ${requiredFields.length} required fields`
+                );
+
+                requiredFields.forEach((field) => {
+                    const value = field.value ? field.value.trim() : "";
+                    console.log(`Field ${field.name || field.id}: "${value}"`);
+
+                    // Reset field styling first
+                    field.style.borderColor = "";
+                    field.style.background = "";
+
+                    // Check if field is empty
+                    if (
+                        !value ||
+                        value === "" ||
+                        value === null ||
+                        value === undefined
+                    ) {
+                        field.style.borderColor = "#ff6b6b !important";
+                        field.style.background = "#ffe6e6 !important";
+                        field.style.boxShadow =
+                            "0 0 5px rgba(255, 107, 107, 0.5)";
+
+                        // Add shake animation to the field
+                        field.style.animation = "fieldShake 0.5s ease-in-out";
+                        setTimeout(() => {
+                            field.style.animation = "";
+                        }, 500);
+
+                        isValid = false;
+                        if (!firstInvalidField) firstInvalidField = field;
+                        return;
+                    }
+
+                    // Additional validation for specific field types
+                    if (field.type === "email") {
+                        const emailPattern =
+                            /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                        if (!emailPattern.test(value)) {
+                            field.style.borderColor = "#ff9800 !important";
+                            field.style.background = "#fff3e0 !important";
+                            field.style.boxShadow =
+                                "0 0 5px rgba(255, 152, 0, 0.5)";
+                            isValid = false;
+                            if (!firstInvalidField) firstInvalidField = field;
+                            return;
+                        }
+                    }
+
+                    if (field.type === "tel") {
+                        const phonePattern = /^[\+]?[0-9\s\-\(\)]{10,15}$/;
+                        if (!phonePattern.test(value)) {
+                            field.style.borderColor = "#ff9800 !important";
+                            field.style.background = "#fff3e0 !important";
+                            field.style.boxShadow =
+                                "0 0 5px rgba(255, 152, 0, 0.5)";
+                            isValid = false;
+                            if (!firstInvalidField) firstInvalidField = field;
+                            return;
+                        }
+                    }
+
+                    // Field is valid
+                    field.style.borderColor = "#4CAF50";
+                    field.style.background = "#f0fff0";
+                    field.style.boxShadow = "0 0 5px rgba(76, 175, 80, 0.3)";
+                });
+
+                // Focus on first invalid field and show error message
+                if (!isValid && firstInvalidField) {
+                    firstInvalidField.focus();
+                    firstInvalidField.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center",
+                    });
+                    showTemporaryMessage(
+                        "Please fill in all required fields correctly!",
+                        "error"
+                    );
+                }
+
+                console.log(
+                    `Step ${currentStep} validation result: ${isValid}`
+                );
+                return isValid;
             }
-          });
-        }
 
-        console.log(`All steps validation result: ${allValid}`);
+            function validateAllSteps() {
+                let allValid = true;
+                let firstInvalidStep = null;
 
-        // If invalid, go back to first invalid step
-        if (!allValid && firstInvalidStep) {
-          currentStep = firstInvalidStep;
-          showStep(currentStep);
-          updateProgress();
-          updateStepIndicator();
+                // Check each step from 1 to current
+                for (let stepNum = 1; stepNum <= currentStep; stepNum++) {
+                    const stepEl = document.querySelector(
+                        `.form-step[data-step="${stepNum}"]`
+                    );
+                    const requiredFields = stepEl.querySelectorAll(
+                        "input[required], select[required]"
+                    );
 
-          // Update button states
-          prevBtn.disabled = currentStep === 1;
-          if (currentStep < totalSteps) {
-            nextBtn.innerHTML = "Next ➡️";
-            nextBtn.classList.remove("submit-btn");
-            nextBtn.classList.add("next-btn");
-          }
+                    console.log(
+                        `Checking step ${stepNum}, found ${requiredFields.length} fields`
+                    );
 
-          showTemporaryMessage(
-            `Please complete all fields in Step ${firstInvalidStep}!`,
-            "error"
-          );
-        }
+                    requiredFields.forEach((field) => {
+                        const value = field.value ? field.value.trim() : "";
+                        console.log(
+                            `Step ${stepNum} - Field ${
+                                field.name || field.id
+                            }: "${value}"`
+                        );
 
-        return allValid;
-      }
+                        if (
+                            !value ||
+                            value === "" ||
+                            value === null ||
+                            value === undefined
+                        ) {
+                            allValid = false;
+                            if (!firstInvalidStep) firstInvalidStep = stepNum;
+                            console.log(
+                                `Invalid field found in step ${stepNum}`
+                            );
+                        }
 
-      nextBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        console.log(`Next button clicked. Current step: ${currentStep}`);
+                        // Additional validations
+                        if (value && field.type === "email") {
+                            const emailPattern =
+                                /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                            if (!emailPattern.test(value)) {
+                                allValid = false;
+                                if (!firstInvalidStep)
+                                    firstInvalidStep = stepNum;
+                            }
+                        }
 
-        if (currentStep < totalSteps) {
-          console.log("Validating current step before proceeding...");
-          if (validateCurrentStep()) {
-            console.log("Current step is valid, proceeding to next step");
-            currentStep++;
-            showStep(currentStep);
-            updateProgress();
-            updateStepIndicator();
-            prevBtn.disabled = false;
+                        if (value && field.type === "tel") {
+                            const phonePattern = /^[\+]?[0-9\s\-\(\)]{10,15}$/;
+                            if (!phonePattern.test(value)) {
+                                allValid = false;
+                                if (!firstInvalidStep)
+                                    firstInvalidStep = stepNum;
+                            }
+                        }
+                    });
+                }
 
-            if (currentStep === totalSteps) {
-              nextBtn.innerHTML = "🎬 Submit Registration 🎬";
-              nextBtn.classList.remove("next-btn");
-              nextBtn.classList.add("submit-btn");
+                console.log(`All steps validation result: ${allValid}`);
+
+                // If invalid, go back to first invalid step
+                if (!allValid && firstInvalidStep) {
+                    currentStep = firstInvalidStep;
+                    showStep(currentStep);
+                    updateProgress();
+                    updateStepIndicator();
+
+                    // Update button states
+                    prevBtn.disabled = currentStep === 1;
+                    if (currentStep < totalSteps) {
+                        nextBtn.innerHTML = "Next ➡️";
+                        nextBtn.classList.remove("submit-btn");
+                        nextBtn.classList.add("next-btn");
+                    }
+
+                    showTemporaryMessage(
+                        `Please complete all fields in Step ${firstInvalidStep}!`,
+                        "error"
+                    );
+                }
+
+                return allValid;
             }
-          } else {
-            console.log("Current step validation failed");
-            // Enhanced shake animation for invalid form
-            const container = document.querySelector(".container");
-            container.style.animation = "shake 0.8s";
 
-            setTimeout(() => {
-              container.style.animation = "";
-            }, 800);
-          }
-        } else {
-          console.log("Final submission attempt...");
-          // Final submission with complete validation
-          if (validateAllSteps()) {
-            console.log("All steps valid, submitting form");
-            submitForm();
-          } else {
-            console.log("Some steps are incomplete");
-            // validateAllSteps() already handles navigation back to invalid step
-          }
-        }
-      });
+            nextBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                console.log(
+                    `Next button clicked. Current step: ${currentStep}`
+                );
 
-      prevBtn.addEventListener("click", () => {
-        if (currentStep > 1) {
-          currentStep--;
-          showStep(currentStep);
-          updateProgress();
-          updateStepIndicator();
+                if (currentStep < totalSteps) {
+                    console.log("Validating current step before proceeding...");
+                    if (validateCurrentStep()) {
+                        console.log(
+                            "Current step is valid, proceeding to next step"
+                        );
+                        currentStep++;
+                        showStep(currentStep);
+                        updateProgress();
+                        updateStepIndicator();
+                        prevBtn.disabled = false;
 
-          if (currentStep === 1) {
-            prevBtn.disabled = true;
-          }
+                        if (currentStep === totalSteps) {
+                            nextBtn.innerHTML = "🎬 Submit Registration 🎬";
+                            nextBtn.classList.remove("next-btn");
+                            nextBtn.classList.add("submit-btn");
+                        }
+                    } else {
+                        console.log("Current step validation failed");
+                        // Enhanced shake animation for invalid form
+                        const container = document.querySelector(".container");
+                        container.style.animation = "shake 0.8s";
 
-          if (currentStep < totalSteps) {
-            nextBtn.innerHTML = "Next ➡️";
-            nextBtn.classList.remove("submit-btn");
-            nextBtn.classList.add("next-btn");
-          }
-        }
-      });
+                        setTimeout(() => {
+                            container.style.animation = "";
+                        }, 800);
+                    }
+                } else {
+                    console.log("Final submission attempt...");
+                    // Final submission with complete validation
+                    if (validateAllSteps()) {
+                        console.log("All steps valid, submitting form");
+                        submitForm();
+                    } else {
+                        console.log("Some steps are incomplete");
+                        // validateAllSteps() already handles navigation back to invalid step
+                    }
+                }
+            });
 
-      function showTemporaryMessage(message, type = "info") {
-        // Remove existing message
-        const existingMsg = document.querySelector(".temp-message");
-        if (existingMsg) {
-          existingMsg.remove();
-        }
+            prevBtn.addEventListener("click", () => {
+                if (currentStep > 1) {
+                    currentStep--;
+                    showStep(currentStep);
+                    updateProgress();
+                    updateStepIndicator();
 
-        const messageEl = document.createElement("div");
-        messageEl.className = "temp-message";
-        messageEl.textContent = message;
-        messageEl.style.cssText = `
+                    if (currentStep === 1) {
+                        prevBtn.disabled = true;
+                    }
+
+                    if (currentStep < totalSteps) {
+                        nextBtn.innerHTML = "Next ➡️";
+                        nextBtn.classList.remove("submit-btn");
+                        nextBtn.classList.add("next-btn");
+                    }
+                }
+            });
+
+            function showTemporaryMessage(message, type = "info") {
+                // Remove existing message
+                const existingMsg = document.querySelector(".temp-message");
+                if (existingMsg) {
+                    existingMsg.remove();
+                }
+
+                const messageEl = document.createElement("div");
+                messageEl.className = "temp-message";
+                messageEl.textContent = message;
+                messageEl.style.cssText = `
                 position: fixed;
                 top: 20px;
                 left: 50%;
                 transform: translateX(-50%);
                 background: ${
-                  type === "error"
-                    ? "linear-gradient(45deg, #ff6b6b, #ff8e8e)"
-                    : "linear-gradient(45deg, #56ab2f, #a8e6cf)"
+                    type === "error"
+                        ? "linear-gradient(45deg, #ff6b6b, #ff8e8e)"
+                        : "linear-gradient(45deg, #56ab2f, #a8e6cf)"
                 };
                 color: white;
                 padding: 15px 25px;
@@ -1149,290 +1418,320 @@
                 animation: slideDown 0.5s ease;
             `;
 
-        document.body.appendChild(messageEl);
+                document.body.appendChild(messageEl);
 
-        setTimeout(() => {
-          messageEl.style.animation = "slideUp 0.5s ease forwards";
-          setTimeout(() => messageEl.remove(), 500);
-        }, 3000);
-      }
-
-      // Store original placeholders
-      document
-        .querySelectorAll("input[placeholder], select[placeholder]")
-        .forEach((field) => {
-          field.setAttribute(
-            "data-original-placeholder",
-            field.getAttribute("placeholder")
-          );
-        });
-
-      async function submitForm() {
-        const formData = new FormData(form);
-        const data = {};
-        for (let [key, value] of formData.entries()) {
-          data[key] = value;
-        }
-
-        console.log("Registration Data:", data);
-
-        try {
-          const res = await fetch(
-            "https://freshers-fiesta-data-handler.rajatrajputdev.workers.dev",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(data),
+                setTimeout(() => {
+                    messageEl.style.animation = "slideUp 0.5s ease forwards";
+                    setTimeout(() => messageEl.remove(), 500);
+                }, 3000);
             }
-          );
 
-          if (!res.ok) throw new Error("Failed to register");
+            // Store original placeholders
+            document
+                .querySelectorAll("input[placeholder], select[placeholder]")
+                .forEach((field) => {
+                    field.setAttribute(
+                        "data-original-placeholder",
+                        field.getAttribute("placeholder")
+                    );
+                });
 
-          const result = await res.json();
-          console.log("Server response:", result);
+            async function submitForm() {
+                const formData = new FormData(form);
+                const data = {};
+                for (let [key, value] of formData.entries()) {
+                    data[key] = value;
+                }
 
-          // Show success message
-          document.getElementById("successMessage").style.display = "block";
+                console.log("Registration Data:", data);
 
-          // Update character to celebration
-          const celebrationChar = document.querySelector(
-            ".step-5 .character-image"
-          );
-          celebrationChar.classList.add("celebration");
+                try {
+                    const res = await fetch(
+                        "https://freshers-fiesta-data-handler.rajatrajputdev.workers.dev",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(data),
+                        }
+                    );
 
-          // Hide navigation buttons
-          document.querySelector(".navigation-buttons").style.display = "none";
+                    if (!res.ok) throw new Error("Failed to register");
 
-          // Auto-reset after 8 seconds
-          setTimeout(() => {
-            form.reset();
-            currentStep = 1;
-            showStep(currentStep);
+                    const result = await res.json();
+                    console.log("Server response:", result);
+
+                    // Show success message
+                    document.getElementById("successMessage").style.display =
+                        "block";
+
+                    // Show WhatsApp community modal automatically
+                    const communityModal =
+                        document.getElementById("communityModal");
+                    if (communityModal) {
+                        communityModal.style.display = "flex";
+                    }
+
+                    // Update character to celebration
+                    const celebrationChar = document.querySelector(
+                        ".step-5 .character-image"
+                    );
+                    celebrationChar.classList.add("celebration");
+
+                    // Hide navigation buttons
+                    document.querySelector(
+                        ".navigation-buttons"
+                    ).style.display = "none";
+
+                    // Auto-reset after 8 seconds
+                    setTimeout(() => {
+                        form.reset();
+                        currentStep = 1;
+                        showStep(currentStep);
+                        updateProgress();
+                        updateStepIndicator();
+                        document.getElementById(
+                            "successMessage"
+                        ).style.display = "none";
+                        document.querySelector(
+                            ".navigation-buttons"
+                        ).style.display = "flex";
+                        prevBtn.disabled = true;
+                        nextBtn.innerHTML = "Next ➡️";
+                        nextBtn.classList.remove("submit-btn");
+                        nextBtn.classList.add("next-btn");
+                        // Hide the modal after reset
+                        if (communityModal) {
+                            communityModal.style.display = "none";
+                        }
+                    }, 8000);
+                } catch (err) {
+                    console.error("Error submitting form:", err);
+                    alert("Something went wrong. Please try again.");
+                }
+            }
+
+            // Initialize
             updateProgress();
             updateStepIndicator();
-            document.getElementById("successMessage").style.display = "none";
-            document.querySelector(".navigation-buttons").style.display =
-              "flex";
-            prevBtn.disabled = true;
-            nextBtn.innerHTML = "Next ➡️";
-            nextBtn.classList.remove("submit-btn");
-            nextBtn.classList.add("next-btn");
-          }, 8000);
-        } catch (err) {
-          console.error("Error submitting form:", err);
-          alert("Something went wrong. Please try again.");
-        }
-      }
 
-      // Initialize
-      updateProgress();
-      updateStepIndicator();
-
-      // Add shake animation
-      const style = document.createElement("style");
-      style.textContent = `
+            // Add shake animation
+            const style = document.createElement("style");
+            style.textContent = `
             .form-container {
                 position: relative;
                 overflow: hidden;
             }
         `;
-      document.head.appendChild(style);
+            document.head.appendChild(style);
 
-      // Add random character animations
-      setInterval(() => {
-        const activeCharacter = document.querySelector(
-          ".form-step.active .character-image"
-        );
-        if (activeCharacter && Math.random() > 0.7) {
-          activeCharacter.style.animation = "none";
-          activeCharacter.style.transform = "scale(1.2) rotate(10deg)";
-          setTimeout(() => {
-            activeCharacter.style.animation = "wiggle 3s ease-in-out infinite";
-            activeCharacter.style.transform = "";
-          }, 500);
-        }
-      }, 4000);
-
-      // Add step dot click functionality with validation
-      document.querySelectorAll(".step-dot").forEach((dot) => {
-        dot.addEventListener("click", () => {
-          const targetStep = parseInt(dot.dataset.step);
-          console.log(
-            `Step dot ${targetStep} clicked. Current step: ${currentStep}`
-          );
-
-          // Only allow navigation to previous steps or current step
-          // For future steps, check if all previous steps are completed
-          if (targetStep <= currentStep) {
-            console.log("Navigating to previous/current step");
-            currentStep = targetStep;
-            showStep(currentStep);
-            updateProgress();
-            updateStepIndicator();
-
-            prevBtn.disabled = currentStep === 1;
-
-            if (currentStep === totalSteps) {
-              nextBtn.innerHTML = "🎬 Submit Registration 🎬";
-              nextBtn.classList.remove("next-btn");
-              nextBtn.classList.add("submit-btn");
-            } else {
-              nextBtn.innerHTML = "Next ➡️";
-              nextBtn.classList.remove("submit-btn");
-              nextBtn.classList.add("next-btn");
-            }
-          } else {
-            console.log("Checking if can navigate to future step...");
-            // Check if all previous steps are completed
-            let canNavigate = true;
-
-            for (let i = 1; i < targetStep; i++) {
-              const stepEl = document.querySelector(
-                `.form-step[data-step="${i}"]`
-              );
-              const requiredFields = stepEl.querySelectorAll(
-                "input[required], select[required]"
-              );
-
-              requiredFields.forEach((field) => {
-                const value = field.value ? field.value.trim() : "";
-                if (!value || value === "") {
-                  canNavigate = false;
+            // Add random character animations
+            setInterval(() => {
+                const activeCharacter = document.querySelector(
+                    ".form-step.active .character-image"
+                );
+                if (activeCharacter && Math.random() > 0.7) {
+                    activeCharacter.style.animation = "none";
+                    activeCharacter.style.transform =
+                        "scale(1.2) rotate(10deg)";
+                    setTimeout(() => {
+                        activeCharacter.style.animation =
+                            "wiggle 3s ease-in-out infinite";
+                        activeCharacter.style.transform = "";
+                    }, 500);
                 }
-              });
+            }, 4000);
 
-              if (!canNavigate) break;
+            // Add step dot click functionality with validation
+            document.querySelectorAll(".step-dot").forEach((dot) => {
+                dot.addEventListener("click", () => {
+                    const targetStep = parseInt(dot.dataset.step);
+                    console.log(
+                        `Step dot ${targetStep} clicked. Current step: ${currentStep}`
+                    );
+
+                    // Only allow navigation to previous steps or current step
+                    // For future steps, check if all previous steps are completed
+                    if (targetStep <= currentStep) {
+                        console.log("Navigating to previous/current step");
+                        currentStep = targetStep;
+                        showStep(currentStep);
+                        updateProgress();
+                        updateStepIndicator();
+
+                        prevBtn.disabled = currentStep === 1;
+
+                        if (currentStep === totalSteps) {
+                            nextBtn.innerHTML = "🎬 Submit Registration 🎬";
+                            nextBtn.classList.remove("next-btn");
+                            nextBtn.classList.add("submit-btn");
+                        } else {
+                            nextBtn.innerHTML = "Next ➡️";
+                            nextBtn.classList.remove("submit-btn");
+                            nextBtn.classList.add("next-btn");
+                        }
+                    } else {
+                        console.log(
+                            "Checking if can navigate to future step..."
+                        );
+                        // Check if all previous steps are completed
+                        let canNavigate = true;
+
+                        for (let i = 1; i < targetStep; i++) {
+                            const stepEl = document.querySelector(
+                                `.form-step[data-step="${i}"]`
+                            );
+                            const requiredFields = stepEl.querySelectorAll(
+                                "input[required], select[required]"
+                            );
+
+                            requiredFields.forEach((field) => {
+                                const value = field.value
+                                    ? field.value.trim()
+                                    : "";
+                                if (!value || value === "") {
+                                    canNavigate = false;
+                                }
+                            });
+
+                            if (!canNavigate) break;
+                        }
+
+                        if (canNavigate) {
+                            console.log("Can navigate to future step");
+                            currentStep = targetStep;
+                            showStep(currentStep);
+                            updateProgress();
+                            updateStepIndicator();
+
+                            prevBtn.disabled = currentStep === 1;
+
+                            if (currentStep === totalSteps) {
+                                nextBtn.innerHTML = "🎬 Submit Registration 🎬";
+                                nextBtn.classList.remove("next-btn");
+                                nextBtn.classList.add("submit-btn");
+                            } else {
+                                nextBtn.innerHTML = "Next ➡️";
+                                nextBtn.classList.remove("submit-btn");
+                                nextBtn.classList.add("next-btn");
+                            }
+                        } else {
+                            console.log(
+                                "Cannot navigate to future step - previous steps incomplete"
+                            );
+                            showTemporaryMessage(
+                                "Complete all previous steps first!",
+                                "error"
+                            );
+                            dot.style.animation = "shake 0.5s";
+                            setTimeout(() => {
+                                dot.style.animation = "";
+                            }, 500);
+                        }
+                    }
+                });
+            });
+
+            // Enhanced keyboard navigation with validation
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "ArrowRight" && currentStep < totalSteps) {
+                    e.preventDefault();
+                    nextBtn.click();
+                } else if (e.key === "ArrowLeft" && currentStep > 1) {
+                    e.preventDefault();
+                    prevBtn.click();
+                }
+            });
+
+            // Enhanced enter key submission
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Enter" && currentStep === totalSteps) {
+                    e.preventDefault();
+                    nextBtn.click();
+                }
+            });
+
+            // Real-time field validation with improved checking
+            document.querySelectorAll("input, select").forEach((field) => {
+                // Add event listeners for real-time validation
+                field.addEventListener("input", () => {
+                    validateFieldRealtime(field);
+                });
+
+                field.addEventListener("change", () => {
+                    validateFieldRealtime(field);
+                });
+
+                field.addEventListener("blur", () => {
+                    validateFieldRealtime(field);
+                });
+
+                field.addEventListener("focus", function () {
+                    this.parentElement.style.transform = "scale(1.02)";
+                });
+
+                field.addEventListener("blur", function () {
+                    this.parentElement.style.transform = "scale(1)";
+                });
+            });
+
+            function validateFieldRealtime(field) {
+                const value = field.value ? field.value.trim() : "";
+
+                if (field.hasAttribute("required")) {
+                    // Reset styles first
+                    field.style.borderColor = "";
+                    field.style.background = "";
+                    field.style.boxShadow = "";
+
+                    if (
+                        !value ||
+                        value === "" ||
+                        value === null ||
+                        value === undefined
+                    ) {
+                        field.style.borderColor = "rgba(255, 255, 255, 0.8)";
+                        field.style.background = "rgba(255, 255, 255, 0.9)";
+                    } else {
+                        // Field has value, check if it's valid
+                        let isFieldValid = true;
+
+                        if (field.type === "email") {
+                            const emailPattern =
+                                /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                            isFieldValid = emailPattern.test(value);
+                        }
+
+                        if (field.type === "tel") {
+                            const phonePattern = /^[\+]?[0-9\s\-\(\)]{10,15}$/;
+                            isFieldValid = phonePattern.test(value);
+                        }
+
+                        if (isFieldValid) {
+                            field.style.borderColor = "#4CAF50";
+                            field.style.background = "#f0fff0";
+                            field.style.boxShadow =
+                                "0 0 5px rgba(76, 175, 80, 0.3)";
+                        } else {
+                            field.style.borderColor = "#ff9800";
+                            field.style.background = "#fff3e0";
+                            field.style.boxShadow =
+                                "0 0 5px rgba(255, 152, 0, 0.5)";
+                        }
+                    }
+                }
             }
 
-            if (canNavigate) {
-              console.log("Can navigate to future step");
-              currentStep = targetStep;
-              showStep(currentStep);
-              updateProgress();
-              updateStepIndicator();
-
-              prevBtn.disabled = currentStep === 1;
-
-              if (currentStep === totalSteps) {
-                nextBtn.innerHTML = "🎬 Submit Registration 🎬";
-                nextBtn.classList.remove("next-btn");
-                nextBtn.classList.add("submit-btn");
-              } else {
-                nextBtn.innerHTML = "Next ➡️";
-                nextBtn.classList.remove("submit-btn");
-                nextBtn.classList.add("next-btn");
-              }
-            } else {
-              console.log(
-                "Cannot navigate to future step - previous steps incomplete"
-              );
-              showTemporaryMessage(
-                "Complete all previous steps first!",
-                "error"
-              );
-              dot.style.animation = "shake 0.5s";
-              setTimeout(() => {
-                dot.style.animation = "";
-              }, 500);
-            }
-          }
-        });
-      });
-
-      // Enhanced keyboard navigation with validation
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "ArrowRight" && currentStep < totalSteps) {
-          e.preventDefault();
-          nextBtn.click();
-        } else if (e.key === "ArrowLeft" && currentStep > 1) {
-          e.preventDefault();
-          prevBtn.click();
-        }
-      });
-
-      // Enhanced enter key submission
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" && currentStep === totalSteps) {
-          e.preventDefault();
-          nextBtn.click();
-        }
-      });
-
-      // Real-time field validation with improved checking
-      document.querySelectorAll("input, select").forEach((field) => {
-        // Add event listeners for real-time validation
-        field.addEventListener("input", () => {
-          validateFieldRealtime(field);
-        });
-
-        field.addEventListener("change", () => {
-          validateFieldRealtime(field);
-        });
-
-        field.addEventListener("blur", () => {
-          validateFieldRealtime(field);
-        });
-
-        field.addEventListener("focus", function () {
-          this.parentElement.style.transform = "scale(1.02)";
-        });
-
-        field.addEventListener("blur", function () {
-          this.parentElement.style.transform = "scale(1)";
-        });
-      });
-
-      function validateFieldRealtime(field) {
-        const value = field.value ? field.value.trim() : "";
-
-        if (field.hasAttribute("required")) {
-          // Reset styles first
-          field.style.borderColor = "";
-          field.style.background = "";
-          field.style.boxShadow = "";
-
-          if (!value || value === "" || value === null || value === undefined) {
-            field.style.borderColor = "rgba(255, 255, 255, 0.8)";
-            field.style.background = "rgba(255, 255, 255, 0.9)";
-          } else {
-            // Field has value, check if it's valid
-            let isFieldValid = true;
-
-            if (field.type === "email") {
-              const emailPattern =
-                /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-              isFieldValid = emailPattern.test(value);
-            }
-
-            if (field.type === "tel") {
-              const phonePattern = /^[\+]?[0-9\s\-\(\)]{10,15}$/;
-              isFieldValid = phonePattern.test(value);
-            }
-
-            if (isFieldValid) {
-              field.style.borderColor = "#4CAF50";
-              field.style.background = "#f0fff0";
-              field.style.boxShadow = "0 0 5px rgba(76, 175, 80, 0.3)";
-            } else {
-              field.style.borderColor = "#ff9800";
-              field.style.background = "#fff3e0";
-              field.style.boxShadow = "0 0 5px rgba(255, 152, 0, 0.5)";
-            }
-          }
-        }
-      }
-
-      // Add field shake animation to CSS
-      const additionalStyles = document.createElement("style");
-      additionalStyles.textContent = `
+            // Add field shake animation to CSS
+            const additionalStyles = document.createElement("style");
+            additionalStyles.textContent = `
             @keyframes fieldShake {
                 0%, 100% { transform: translateX(0); }
                 10%, 30%, 50%, 70%, 90% { transform: translateX(-3px); }
                 20%, 40%, 60%, 80% { transform: translateX(3px); }
             }
-            
+
             @keyframes slideDown {
                 from {
                     opacity: 0;
@@ -1443,7 +1742,7 @@
                     transform: translateX(-50%) translateY(0);
                 }
             }
-            
+
             @keyframes slideUp {
                 from {
                     opacity: 1;
@@ -1454,27 +1753,27 @@
                     transform: translateX(-50%) translateY(-20px);
                 }
             }
-            
+
             @keyframes shake {
                 0%, 100% { transform: translateX(0); }
                 10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
                 20%, 40%, 60%, 80% { transform: translateX(5px); }
             }
-            
+
             /* Ensure form validation styles have high specificity */
             input[required]:invalid {
                 border-color: #ff6b6b !important;
                 background: #ffe6e6 !important;
                 box-shadow: 0 0 5px rgba(255, 107, 107, 0.5) !important;
             }
-            
+
             select[required]:invalid {
                 border-color: #ff6b6b !important;
                 background: #ffe6e6 !important;
                 box-shadow: 0 0 5px rgba(255, 107, 107, 0.5) !important;
             }
         `;
-      document.head.appendChild(additionalStyles);
-    </script>
-  </body>
+            document.head.appendChild(additionalStyles);
+        </script>
+    </body>
 </html>
